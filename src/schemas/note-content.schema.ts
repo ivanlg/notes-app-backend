@@ -12,6 +12,6 @@ const OpSchema = z.object({
   attributes: AttributesSchema.optional(),
 });
 
-export const ContentSchema = z.object({
+export const NoteContentSchema = z.object({
   ops: z.array(OpSchema),
 });

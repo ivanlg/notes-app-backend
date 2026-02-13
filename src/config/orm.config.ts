@@ -1,11 +1,11 @@
 import { ConfigService } from '@nestjs/config';
-import { Note } from 'src/entities/note.entity';
+import { NoteEntity } from 'src/entities/note.entity';
 import { DataSource } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { DataSourceOptions } from 'typeorm/browser';
 import * as dotenv from 'dotenv';
 
-const entities = [Note];
+const entities = [NoteEntity];
 
 export const ormBaseConfig = {
   migrations: [__dirname + '/../migrations/*.ts'],

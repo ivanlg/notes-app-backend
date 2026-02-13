@@ -1,5 +1,5 @@
-import { z } from 'zod';
+import { NoteSchema } from './note.schema';
 
-export const FindNoteParamsSchema = z.object({
-  id: z.uuidv4(),
+export const FindNoteParamsSchema = NoteSchema.pick({
+  id: true,
 });

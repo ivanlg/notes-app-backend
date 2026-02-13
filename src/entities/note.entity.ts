@@ -1,8 +1,8 @@
 import type { NoteContent } from 'src/types/note-content.type';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
-export class Note {
+@Entity('note')
+export class NoteEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

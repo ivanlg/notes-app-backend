@@ -1,6 +1,5 @@
-import z from 'zod';
-import { NoteContentSchema } from './note-content.schema';
+import { NoteSchema } from './note.schema';
 
-export const UpdateNoteSchema = z.object({
-  content: NoteContentSchema,
+export const UpdateNoteSchema = NoteSchema.pick({
+  content: true,
 });

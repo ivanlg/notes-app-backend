@@ -10,69 +10,108 @@ import {
   Put,
   UsePipes,
 } from '@nestjs/common';
-import type { CreateNoteDto } from 'src/dtos/create-note.dto';
-import type { UpdateNoteDto } from 'src/dtos/update-note.dto';
+
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { CreateNoteSchema } from 'src/schemas/create-note.schema';
 import { FindNoteParamsSchema } from 'src/schemas/find-note-params.schema';
 import { UpdateNoteSchema } from 'src/schemas/update-note.schema';
-
-import type { FindNoteParams } from 'src/types/find-note-params.type';
-import { Note } from 'src/types/note.type';
 import { NoteService } from './note.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { NoteDto } from 'src/dtos/note.dto';
+import { FindNoteParamsDto } from 'src/dtos/find-note-params.dto';
+import { CreateNoteDto } from 'src/dtos/create-note.dto';
+import { UpdateNoteDto } from 'src/dtos/update-note.dto';
 
+@ApiTags('Notes')
 @Controller('notes')
 export class NoteController {
   constructor(private noteService: NoteService) {}
 
   @Get()
-  async getAll(): Promise<Note[]> {
+  @ApiOperation({ summary: 'Get all notes' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of notes',
+    type: [NoteDto],
+  })
+  @Get()
+  async getAll(): Promise<NoteDto[]> {
     return this.noteService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get note by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'The note',
+    type: NoteDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Note not found',
+  })
   async find(
-    @Param(new ZodValidationPipe(FindNoteParamsSchema)) params: FindNoteParams,
-  ): Promise<Note> {
+    @Param(new ZodValidationPipe(FindNoteParamsSchema))
+    params: FindNoteParamsDto,
+  ): Promise<NoteDto> {
     const { id: noteId } = params;
     const note = await this.noteService.findOne(noteId);
     if (!note) {
-      throw new NotFoundException(`No note found for note id: "${noteId}"`);
+      throw new NotFoundException('Note not found');
     }
 
     return note;
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create note' })
+  @ApiResponse({ status: 201, type: NoteDto })
   @UsePipes(new ZodValidationPipe(CreateNoteSchema))
-  async create(@Body() noteDto: CreateNoteDto): Promise<Note> {
+  async create(@Body() noteDto: CreateNoteDto): Promise<NoteDto> {
     return this.noteService.create(noteDto);
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update note' })
+  @ApiResponse({ status: 201, type: NoteDto })
+  @ApiResponse({
+    status: 404,
+    description: 'Note not found',
+  })
   async update(
-    @Param(new ZodValidationPipe(FindNoteParamsSchema)) params: FindNoteParams,
+    @Param(new ZodValidationPipe(FindNoteParamsSchema))
+    params: FindNoteParamsDto,
     @Body(new ZodValidationPipe(UpdateNoteSchema)) updateNoteDto: UpdateNoteDto,
-  ): Promise<Note> {
+  ): Promise<NoteDto> {
     const { id: noteId } = params;
 
     const note = await this.noteService.findOne(noteId);
     if (!note) {
-      throw new NotFoundException(`No note found for note id: "${noteId}"`);
+      throw new NotFoundException('Note not found');
     }
 
     return this.noteService.update(Object.assign(note, updateNoteDto));
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete note' })
+  @ApiResponse({
+    status: 204,
+    description: 'Note successfully deleted',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Note not found',
+  })
   @HttpCode(204)
   async delete(
-    @Param(new ZodValidationPipe(FindNoteParamsSchema)) params: FindNoteParams,
+    @Param(new ZodValidationPipe(FindNoteParamsSchema))
+    params: FindNoteParamsDto,
   ) {
     const { id: noteId } = params;
     const note = await this.noteService.findOne(noteId);
     if (!note) {
-      throw new NotFoundException(`No note found for note id: "${noteId}"`);
+      throw new NotFoundException('Note not found');
     }
 
     await this.noteService.delete(noteId);

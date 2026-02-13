@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   NotFoundException,
@@ -21,11 +22,15 @@ import { NoteDto } from 'src/dtos/note.dto';
 import { FindNoteParamsDto } from 'src/dtos/find-note-params.dto';
 import { CreateNoteDto } from 'src/dtos/create-note.dto';
 import { UpdateNoteDto } from 'src/dtos/update-note.dto';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Notes')
 @Controller('notes')
 export class NoteController {
-  constructor(private noteService: NoteService) {}
+  constructor(
+    private noteService: NoteService,
+    private configService: ConfigService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all notes' })
@@ -91,6 +96,24 @@ export class NoteController {
     }
 
     return this.noteService.update(Object.assign(note, updateNoteDto));
+  }
+
+  @Delete('delete-all')
+  @ApiOperation({ summary: 'Delete all notes' })
+  @ApiResponse({
+    status: 204,
+    description: 'Notes successfully deleted',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Test utils are no enabled',
+  })
+  async deleteAll() {
+    const enabled = this.configService.get<boolean>('ENABLE_TEST_UTILS');
+    if (!enabled) {
+      throw new ForbiddenException('Test utils are no enabled');
+    }
+    await this.noteService.deleteAll();
   }
 
   @Delete(':id')

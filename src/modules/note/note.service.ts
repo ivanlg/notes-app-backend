@@ -31,4 +31,8 @@ export class NoteService {
   async delete(id: string): Promise<void> {
     await this.noteRepository.delete(id);
   }
+
+  async deleteAll(): Promise<void> {
+    await this.noteRepository.deleteAll();
+  }
 }

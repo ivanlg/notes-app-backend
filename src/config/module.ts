@@ -9,6 +9,7 @@ export const moduleconfig: ConfigModuleOptions = {
     POSTGRES_PASSWORD: Joi.string().required(),
     POSTGRES_DB: Joi.string(),
     PORT: Joi.number(),
+    ENABLE_TEST_UTILS: Joi.string(),
   }),
   isGlobal: true,
 };

@@ -23,6 +23,7 @@ import { FindNoteParamsDto } from 'src/dtos/find-note-params.dto';
 import { CreateNoteDto } from 'src/dtos/create-note.dto';
 import { UpdateNoteDto } from 'src/dtos/update-note.dto';
 import { ConfigService } from '@nestjs/config';
+import { ErrorDto } from 'src/dtos/error.dto';
 
 @ApiTags('Notes')
 @Controller('notes')
@@ -54,6 +55,7 @@ export class NoteController {
   @ApiResponse({
     status: 404,
     description: 'Note not found',
+    type: ErrorDto,
   })
   async find(
     @Param(new ZodValidationPipe(FindNoteParamsSchema))
@@ -82,6 +84,7 @@ export class NoteController {
   @ApiResponse({
     status: 404,
     description: 'Note not found',
+    type: ErrorDto,
   })
   async update(
     @Param(new ZodValidationPipe(FindNoteParamsSchema))
@@ -107,6 +110,7 @@ export class NoteController {
   @ApiResponse({
     status: 403,
     description: 'Test utils are no enabled',
+    type: ErrorDto,
   })
   async deleteAll() {
     const enabled = this.configService.get<boolean>('ENABLE_TEST_UTILS');
@@ -125,6 +129,7 @@ export class NoteController {
   @ApiResponse({
     status: 404,
     description: 'Note not found',
+    type: ErrorDto,
   })
   @HttpCode(204)
   async delete(

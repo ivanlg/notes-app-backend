@@ -1,0 +1,1 @@
+export const NOTES_API_KEY_HEADER = 'NOTES_API_KEY';

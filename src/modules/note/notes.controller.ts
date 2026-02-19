@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 
@@ -24,7 +25,9 @@ import { CreateNoteDto } from 'src/dtos/create-note.dto';
 import { UpdateNoteDto } from 'src/dtos/update-note.dto';
 import { ConfigService } from '@nestjs/config';
 import { ErrorDto } from 'src/dtos/error.dto';
+import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
 
+@UseGuards(ClerkAuthGuard)
 @ApiTags('Notes')
 @Controller('notes')
 export class NoteController {

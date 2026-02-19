@@ -1,5 +1,5 @@
-import type { NoteContent } from 'src/types/note-content.type';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import type { NoteContent } from '../types/note-content.type';
 
 @Entity('note')
 export class NoteEntity {

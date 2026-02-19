@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { NoteEntity } from 'src/entities/note.entity';
+import { NoteEntity } from 'src/modules/note/entities/note.entity';
 import { DataSource } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { DataSourceOptions } from 'typeorm/browser';

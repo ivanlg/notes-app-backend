@@ -14,17 +14,17 @@ import {
 } from '@nestjs/common';
 
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
-import { CreateNoteSchema } from 'src/schemas/create-note.schema';
-import { FindNoteParamsSchema } from 'src/schemas/find-note-params.schema';
-import { UpdateNoteSchema } from 'src/schemas/update-note.schema';
+import { CreateNoteSchema } from 'src/modules/note/schemas/create-note.schema';
+import { FindNoteParamsSchema } from 'src/modules/note/schemas/find-note-params.schema';
+import { UpdateNoteSchema } from 'src/modules/note/schemas/update-note.schema';
 import { NoteService } from './note.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { NoteDto } from 'src/dtos/note.dto';
-import { FindNoteParamsDto } from 'src/dtos/find-note-params.dto';
-import { CreateNoteDto } from 'src/dtos/create-note.dto';
-import { UpdateNoteDto } from 'src/dtos/update-note.dto';
+import { NoteDto } from 'src/modules/note/dtos/note.dto';
+import { FindNoteParamsDto } from 'src/modules/note/dtos/find-note-params.dto';
+import { CreateNoteDto } from 'src/modules/note/dtos/create-note.dto';
+import { UpdateNoteDto } from 'src/modules/note/dtos/update-note.dto';
 import { ConfigService } from '@nestjs/config';
-import { ErrorDto } from 'src/dtos/error.dto';
+import { ErrorDto } from 'src/modules/note/dtos/error.dto';
 import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
 
 @UseGuards(ClerkAuthGuard)

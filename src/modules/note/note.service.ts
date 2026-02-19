@@ -11,16 +11,18 @@ export class NoteService {
     private noteRepository: Repository<NoteEntity>,
   ) {}
 
-  findAll(): Promise<NoteEntity[]> {
-    return this.noteRepository.find();
+  findAll(userId: string): Promise<NoteEntity[]> {
+    return this.noteRepository.find({
+      where: { userId },
+    });
   }
 
   findOne(id: string): Promise<NoteEntity | null> {
     return this.noteRepository.findOneBy({ id });
   }
 
-  create(createNoteDto: CreateNoteDto): Promise<NoteEntity> {
-    const note = this.noteRepository.create({ ...createNoteDto });
+  create(userId: string, createNoteDto: CreateNoteDto): Promise<NoteEntity> {
+    const note = this.noteRepository.create({ ...createNoteDto, userId });
     return this.noteRepository.save(note);
   }
 

@@ -15,7 +15,7 @@ export class ClerkStrategy extends PassportStrategy(Strategy, 'clerk') {
     super();
   }
 
-  async validate(req: Request): Promise<clerk.User> {
+  async validate(req: Request): Promise<{ id: string }> {
     const token = req.headers.authorization?.split(' ').pop();
 
     if (!token) {
@@ -27,9 +27,7 @@ export class ClerkStrategy extends PassportStrategy(Strategy, 'clerk') {
         secretKey: this.configService.get('CLERK_SECRET_KEY'),
       });
 
-      const user = await this.clerkClient.users.getUser(tokenPayload.sub);
-
-      return user;
+      return { id: tokenPayload.sub };
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException('Invalid token');

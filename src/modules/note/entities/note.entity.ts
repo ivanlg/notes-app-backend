@@ -6,6 +6,9 @@ export class NoteEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ nullable: false })
+  userId: string;
+
   @Column({ type: 'jsonb', nullable: false })
   content!: NoteContent;
 }

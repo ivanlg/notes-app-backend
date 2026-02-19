@@ -10,7 +10,6 @@ import {
   Post,
   Put,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
@@ -26,6 +25,7 @@ import { UpdateNoteDto } from 'src/modules/note/dtos/update-note.dto';
 import { ConfigService } from '@nestjs/config';
 import { ErrorDto } from 'src/modules/note/dtos/error.dto';
 import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
+import { UserId } from 'src/decorators/user-id.decorator';
 
 @UseGuards(ClerkAuthGuard)
 @ApiTags('Notes')
@@ -44,8 +44,8 @@ export class NoteController {
     type: [NoteDto],
   })
   @Get()
-  async getAll(): Promise<NoteDto[]> {
-    return this.noteService.findAll();
+  async getAll(@UserId() UserId: string): Promise<NoteDto[]> {
+    return this.noteService.findAll(UserId);
   }
 
   @Get(':id')
@@ -76,9 +76,11 @@ export class NoteController {
   @Post()
   @ApiOperation({ summary: 'Create note' })
   @ApiResponse({ status: 201, type: NoteDto })
-  @UsePipes(new ZodValidationPipe(CreateNoteSchema))
-  async create(@Body() noteDto: CreateNoteDto): Promise<NoteDto> {
-    return this.noteService.create(noteDto);
+  async create(
+    @Body(new ZodValidationPipe(CreateNoteSchema)) noteDto: CreateNoteDto,
+    @UserId() userId: string,
+  ): Promise<NoteDto> {
+    return this.noteService.create(userId, noteDto);
   }
 
   @Put(':id')

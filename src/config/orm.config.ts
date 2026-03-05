@@ -26,6 +26,13 @@ export function createOrmConfig(
     username: configService.get('POSTGRES_USER'),
     password: configService.get('POSTGRES_PASSWORD'),
     database: configService.get('POSTGRES_DB'),
+    ssl: configService.get('POSTGRES_SSL')
+      ? {
+          rejectUnauthorized: configService.get(
+            'POSTGRES_SSL_REJECT_UNAUTHORIZED',
+          ),
+        }
+      : undefined,
     ...ormBaseConfig,
   };
 }
@@ -40,6 +47,12 @@ export function createOrmConfigFromEnv(): DataSourceOptions {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
+    ssl: process.env.POSTGRES_SSL
+      ? {
+          rejectUnauthorized:
+            process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED !== 'false',
+        }
+      : undefined,
     ...ormBaseConfig,
   };
 }

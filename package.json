@@ -18,10 +18,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli -d src/config/orm.config.ts",
-    "db:generate-migration": "npm run typeorm migration:generate",
-    "db:run-migrations": "npm run typeorm migration:run",
-    "db:revert-migration": "npm run typeorm migration:revert"
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
+    "typeorm:with-ds": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli -d src/config/orm.config.ts",
+    "db:create-migration": "npm run typeorm -- migration:create",
+    "db:generate-migration": "npm run typeorm:with-ds -- migration:generate",
+    "db:run-migrations": "npm run typeorm:with-ds -- migration:run",
+    "db:revert-migration": "npm run typeorm:with-ds -- migration:revert"
   },
   "dependencies": {
     "@clerk/backend": "^2.31.1",

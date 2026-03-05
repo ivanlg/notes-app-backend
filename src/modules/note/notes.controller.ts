@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 
@@ -17,7 +18,12 @@ import { CreateNoteSchema } from 'src/modules/note/schemas/create-note.schema';
 import { FindNoteParamsSchema } from 'src/modules/note/schemas/find-note-params.schema';
 import { UpdateNoteSchema } from 'src/modules/note/schemas/update-note.schema';
 import { NoteService } from './note.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { NoteDto } from 'src/modules/note/dtos/note.dto';
 import { FindNoteParamsDto } from 'src/modules/note/dtos/find-note-params.dto';
 import { CreateNoteDto } from 'src/modules/note/dtos/create-note.dto';
@@ -26,8 +32,11 @@ import { ConfigService } from '@nestjs/config';
 import { ErrorDto } from 'src/modules/note/dtos/error.dto';
 import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
 import { UserId } from 'src/decorators/user-id.decorator';
+import { GetNotesQueryDto } from './dtos/get-notes-query-dto';
+import { GetNotesQuerySchema } from './schemas/get-notes-query.schema';
 
 @UseGuards(ClerkAuthGuard)
+@ApiBearerAuth()
 @ApiTags('Notes')
 @Controller('notes')
 export class NoteController {
@@ -36,7 +45,6 @@ export class NoteController {
     private configService: ConfigService,
   ) {}
 
-  @Get()
   @ApiOperation({ summary: 'Get all notes' })
   @ApiResponse({
     status: 200,
@@ -44,8 +52,11 @@ export class NoteController {
     type: [NoteDto],
   })
   @Get()
-  async getAll(@UserId() UserId: string): Promise<NoteDto[]> {
-    return this.noteService.findAll(UserId);
+  async getAll(
+    @UserId() UserId: string,
+    @Query(new ZodValidationPipe(GetNotesQuerySchema)) query: GetNotesQueryDto,
+  ): Promise<NoteDto[]> {
+    return this.noteService.findAll(UserId, query);
   }
 
   @Get(':id')
@@ -117,12 +128,12 @@ export class NoteController {
     description: 'Test utils are no enabled',
     type: ErrorDto,
   })
-  async deleteAll() {
+  async deleteAll(@UserId() userId: string) {
     const enabled = this.configService.get<boolean>('ENABLE_TEST_UTILS');
     if (!enabled) {
       throw new ForbiddenException('Test utils are no enabled');
     }
-    await this.noteService.deleteAll();
+    await this.noteService.deleteAll(userId);
   }
 
   @Delete(':id')

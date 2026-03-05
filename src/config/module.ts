@@ -13,6 +13,8 @@ export const moduleconfig: ConfigModuleOptions = {
     CLERK_SECRET_KEY: Joi.string(),
     CLERK_PUBLISHABLE_KEY: Joi.string(),
     NOTES_API_KEY: Joi.string(),
+    POSTGRES_SSL: Joi.boolean().default(false),
+    POSTGRES_SSL_REJECT_UNAUTHORIZED: Joi.boolean().default(true),
   }),
   isGlobal: true,
 };

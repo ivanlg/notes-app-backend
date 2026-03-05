@@ -13,6 +13,7 @@ async function bootstrap() {
     .setTitle('Notes API')
     .setDescription('CRUD API for managing notes')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

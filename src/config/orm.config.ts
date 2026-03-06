@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { DataSourceOptions } from 'typeorm/browser';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 
 const entities = [NoteEntity];
 
@@ -31,6 +32,7 @@ export function createOrmConfig(
           rejectUnauthorized: configService.get(
             'POSTGRES_SSL_REJECT_UNAUTHORIZED',
           ),
+          ca: fs.readFileSync('./certs/rds-ca.pem').toString(),
         }
       : undefined,
     ...ormBaseConfig,
@@ -51,6 +53,7 @@ export function createOrmConfigFromEnv(): DataSourceOptions {
       ? {
           rejectUnauthorized:
             process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED !== 'false',
+          ca: fs.readFileSync('./certs/rds-ca.pem').toString(),
         }
       : undefined,
     ...ormBaseConfig,

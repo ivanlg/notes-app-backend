@@ -96,3 +96,28 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## Docker
+
+- **Build production image:**
+
+```bash
+docker build -t notes-app .
+```
+
+- **Run locally:**
+
+```bash
+docker run --name notes-backend --env-file .env -p 3000:3000 notes-backend
+```
+
+- **Local development with docker-compose:**
+
+```bash
+docker compose -f docker-compose.local.yml up -d
+```
+
+Notes:
+
+- The app listens on port `3000` by default.
+- Provide the database env vars (host/port/user/password/name) used by the app (see `src/config/orm.config.ts` if needed).

@@ -5,6 +5,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { DataSourceOptions } from 'typeorm/browser';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
+import env from 'env-var';
 
 const entities = [NoteEntity];
 
@@ -17,6 +18,19 @@ export const ormBaseConfig = {
   },
 };
 
+function buildSslConfig(
+  ssl: boolean,
+  rejectUnauthorized: boolean,
+  caPath = './public_certs/rds-ca.pem',
+): { rejectUnauthorized: boolean; ca?: string } | undefined {
+  if (!ssl) return undefined;
+
+  const ca = fs.readFileSync(caPath).toString();
+
+  // Return the object form (preferred by node-postgres) so we can include CA when present
+  return { rejectUnauthorized, ca };
+}
+
 export function createOrmConfig(
   configService: ConfigService,
 ): DataSourceOptions {
@@ -27,14 +41,11 @@ export function createOrmConfig(
     username: configService.get('POSTGRES_USER'),
     password: configService.get('POSTGRES_PASSWORD'),
     database: configService.get('POSTGRES_DB'),
-    ssl: configService.get('POSTGRES_SSL')
-      ? {
-          rejectUnauthorized: configService.get(
-            'POSTGRES_SSL_REJECT_UNAUTHORIZED',
-          ),
-          ca: fs.readFileSync('./public_certs/rds-ca.pem').toString(),
-        }
-      : undefined,
+    ssl: buildSslConfig(
+      configService.get<boolean>('POSTGRES_SSL')!,
+      configService.get<boolean>('POSTGRES_SSL_REJECT_UNAUTHORIZED')!,
+      configService.get('POSTGRES_SSL_CA_PATH') || './public_certs/rds-ca.pem',
+    ),
     ...ormBaseConfig,
   };
 }
@@ -49,13 +60,14 @@ export function createOrmConfigFromEnv(): DataSourceOptions {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
-    ssl: process.env.POSTGRES_SSL
-      ? {
-          rejectUnauthorized:
-            process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED !== 'false',
-          ca: fs.readFileSync('./public_certs/rds-ca.pem').toString(),
-        }
-      : undefined,
+    ssl: buildSslConfig(
+      env.get('POSTGRES_SSL').required().asBool(),
+      env.get('POSTGRES_SSL_REJECT_UNAUTHORIZED').required().asBool(),
+      env
+        .get('POSTGRES_SSL_CA_PATH')
+        .default('./public_certs/rds-ca.pem')
+        .asString(),
+    ),
     ...ormBaseConfig,
   };
 }

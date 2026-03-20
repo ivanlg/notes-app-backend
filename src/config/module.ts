@@ -15,6 +15,7 @@ export const moduleconfig: ConfigModuleOptions = {
     NOTES_API_KEY: Joi.string(),
     POSTGRES_SSL: Joi.boolean().default(false),
     POSTGRES_SSL_REJECT_UNAUTHORIZED: Joi.boolean().default(true),
+    POSTGRES_SSL_CA_PATH: Joi.string().default('./public_certs/rds-ca.pem'),
   }),
   isGlobal: true,
 };

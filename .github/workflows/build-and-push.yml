@@ -28,6 +28,7 @@ jobs:
           IMAGE_TAG=${GITHUB_SHA}
           echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "image_uri=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image_uri_latest=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:latest" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -41,12 +42,14 @@ jobs:
       - name: Build and Tag Docker image
         working-directory: .
         run: |
-          docker build -t ${{ steps.meta.outputs.image_uri }} .
+          docker build -t ${{ steps.meta.outputs.image_uri }} -t ${{ steps.meta.outputs.image_uri_latest }} .
 
       - name: Push Docker image to ECR
         run: |
           docker push ${{ steps.meta.outputs.image_uri }}
+          docker push ${{ steps.meta.outputs.image_uri_latest }}
 
       - name: Show pushed image
         run: |
           echo "Pushed image: ${{ steps.meta.outputs.image_uri }}"
+          echo "Pushed image: ${{ steps.meta.outputs.image_uri_latest }}"

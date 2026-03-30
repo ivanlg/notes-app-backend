@@ -108,7 +108,7 @@ docker build -t notes-app .
 - **Run locally:**
 
 ```bash
-docker run --name notes-backend --env-file .env -p 3000:3000 notes-backend
+docker run --name notes-backend --env-file .env -p 3000:3000 notes-app
 ```
 
 - **Local development with docker-compose:**

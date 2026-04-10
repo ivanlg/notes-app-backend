@@ -4,10 +4,15 @@ import { CreateNoteDto } from 'src/modules/note/dtos/create-note.dto';
 import { NoteEntity } from 'src/modules/note/entities/note.entity';
 import { Repository } from 'typeorm';
 import { GetNotesQueryDto } from './dtos/get-notes-query-dto';
+import { trace, SpanStatusCode } from '@opentelemetry/api';
+import { PinoLoggerService } from '../observability/pino-logger.service';
 
 @Injectable()
 export class NoteService {
+  private readonly tracer = trace.getTracer('notes-service');
+
   constructor(
+    private readonly logger: PinoLoggerService,
     @InjectRepository(NoteEntity)
     private noteRepository: Repository<NoteEntity>,
   ) {}
@@ -40,8 +45,31 @@ export class NoteService {
   }
 
   create(userId: string, createNoteDto: CreateNoteDto): Promise<NoteEntity> {
-    const note = this.noteRepository.create({ ...createNoteDto, userId });
-    return this.noteRepository.save(note);
+    return this.tracer.startActiveSpan(
+      'NotesService.createNote',
+      async (span) => {
+        try {
+          span.setAttribute('note.testAttr', 'Test');
+
+          const note = this.noteRepository.create({ ...createNoteDto, userId });
+
+          // Log the note creation with the note ID
+          this.logger.log({ noteId: note.id }, 'note created');
+
+          return this.noteRepository.save(note);
+        } catch (error) {
+          span.recordException(error as Error);
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: error instanceof Error ? error.message : 'Unknown error',
+          });
+
+          throw error;
+        } finally {
+          span.end();
+        }
+      },
+    );
   }
 
   update(note: NoteEntity): Promise<NoteEntity> {

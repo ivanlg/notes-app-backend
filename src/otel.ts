@@ -2,13 +2,13 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import * as dotenv from 'dotenv';
 
-const traceExporter = new OTLPTraceExporter({
-  url: 'http://localhost:4318/v1/traces',
-});
+dotenv.config();
+
+const traceExporter = new OTLPTraceExporter();
 
 const sdk = new NodeSDK({
-  serviceName: 'notes-backend-local',
   spanProcessors: [new BatchSpanProcessor(traceExporter)],
   instrumentations: [getNodeAutoInstrumentations()],
 });
